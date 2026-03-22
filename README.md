@@ -1,5 +1,6 @@
 # 🎮 Sr. Miag e o Pastel Perfeito
-<img width="1536" height="1024" alt="ChatGPT Image 22 de mar  de 2026, 19_54_33" src="https://github.com/user-attachments/assets/82b765db-bd63-4b71-b6fb-baaf88bc7899" />
+
+<img width="1536" height="1024" alt="ChatGPT Image 22 de mar  de 2026, 20_08_51" src="https://github.com/user-attachments/assets/d00e7767-6c6d-4571-9d86-4f286d5f0d4e" />
 
 Projeto acadêmico de jogo 2D estilo plataforma desenvolvido como trabalho universitário.
 
