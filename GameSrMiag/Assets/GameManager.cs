@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     public string victorySceneName = "Vitoria";
     public string defeatSceneName = "Derrota";
-    public string firstGameplaySceneName = "K1";
+    public string firstGameplaySceneName = "Recep";
 
     private bool gameEnded = false;
 

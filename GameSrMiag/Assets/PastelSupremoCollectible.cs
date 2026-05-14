@@ -24,12 +24,8 @@ public class PastelSupremoCollectible : MonoBehaviour
 
         if (player != null)
         {
-            Debug.Log("Pastel: Player entrou no trigger");
-
             if (!GameProgress.IsPastelCollected(uniqueId))
             {
-                Debug.Log("Pastel: ainda não coletado, aplicando buff e marcando progresso");
-
                 GameProgress.MarkPastelCollected(uniqueId);
 
                 player.CollectPastelSupremo(
@@ -39,11 +35,10 @@ public class PastelSupremoCollectible : MonoBehaviour
                 );
             }
 
-            if (AudioManager.Instance != null)
+            if(AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayCollectPastel();
             }
-
             Destroy(gameObject);
         }
     }

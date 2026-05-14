@@ -43,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Pastel Supremo")]
     public int totalPasteisSupremos = 6;
 
+    [Header("Debug")]
+    public bool debugPlayerState = true;
+    private float lastDebugTime = 0f;
+
     private Rigidbody2D rb;
     private Animator animator;
     private Collider2D col;
@@ -81,6 +85,8 @@ public class PlayerMovement : MonoBehaviour
 
         LoadOrInitProgress();
         UpdateUI();
+
+        DebugState("START");
     }
 
     void LoadOrInitProgress()
@@ -108,8 +114,45 @@ public class PlayerMovement : MonoBehaviour
         HandleShootInput();
         FlipPlayer();
         UpdateAnimator();
+        HandleFootstepSound();
         HandleOilDamage();
         UpdateBuffUI();
+
+        if (debugPlayerState && Input.GetKeyDown(KeyCode.P))
+        {
+            DebugState("TECLA P");
+        }
+
+        if (debugPlayerState && Time.time - lastDebugTime > 1f)
+        {
+            bool possivelTravamento =
+                Mathf.Abs(horizontalInput) > 0.1f &&
+                Mathf.Abs(rb.linearVelocity.x) < 0.01f &&
+                !isShooting &&
+                !isKnockedBack;
+
+            if (possivelTravamento)
+            {
+                DebugState("POSSIVEL TRAVAMENTO");
+                lastDebugTime = Time.time;
+            }
+        }
+    }
+
+    void HandleFootstepSound()
+    {
+        if (AudioManager.Instance == null) return;
+
+        bool isWalking = Mathf.Abs(horizontalInput) > 0.1f;
+
+        if (isWalking && isGrounded && !isShooting && !isKnockedBack)
+        {
+            AudioManager.Instance.StartFootstep();
+        }
+        else
+        {
+            AudioManager.Instance.StopFootstep();
+        }
     }
 
     void FixedUpdate()
@@ -148,16 +191,11 @@ public class PlayerMovement : MonoBehaviour
         );
 
         isGrounded = hit.collider != null;
-
-        Debug.Log($"[Ground] groundLayers value = {groundLayers.value} ({groundLayers}) | isGrounded = {isGrounded}");
     }
 
     void HandleJump()
     {
-        if (isKnockedBack || isShooting)
-        {
-            return;
-        }
+        if (isKnockedBack || isShooting) return;
 
         if (Input.GetButtonDown("Jump") && isGrounded && Time.time >= nextJumpTime)
         {
@@ -175,6 +213,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
+        DebugState("JUMP");
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayJump();
+        }
+
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
@@ -206,15 +251,25 @@ public class PlayerMovement : MonoBehaviour
     void StartShoot()
     {
         isShooting = true;
+        DebugState("START SHOOT");
+
         if (animator != null)
         {
             animator.ResetTrigger("Shoot");
             animator.SetTrigger("Shoot");
         }
+
+        CancelInvoke(nameof(ForceEndShoot));
+        Invoke(nameof(ForceEndShoot), 0.5f);
     }
 
     public void ShootProjectile()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPlayerShoot();
+        }
+
         if (projectilePrefab == null || firePoint == null) return;
 
         int dir = facingRight ? 1 : -1;
@@ -228,14 +283,22 @@ public class PlayerMovement : MonoBehaviour
             pastel.SetDirection(dir, col);
             pastel.SetSpeedMultiplier(projectileSpeedMultiplier);
         }
+    }
+
+    void ForceEndShoot()
+    {
+        if (isShooting)
         {
-            AudioManager.Instance.PlayPlayerShoot();
+            isShooting = false;
+            DebugState("FORCE END SHOOT");
         }
     }
 
     public void EndShoot()
     {
         isShooting = false;
+        CancelInvoke(nameof(ForceEndShoot));
+        DebugState("END SHOOT");
     }
 
     void FlipPlayer()
@@ -267,15 +330,21 @@ public class PlayerMovement : MonoBehaviour
 
     public void TakeDamageFromEnemy(int damage)
     {
+        DebugState("ANTES DE TOMAR DANO");
+
         if (isInvincible) return;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayPlayerDamage();
+        }
 
         lives -= damage;
         lives = Mathf.Clamp(lives, 0, maxLives);
+        SaveLives();
 
-        {
-            AudioManager.Instance.PlayPlayerHurt();
-        }
-        
+        DebugState("DEPOIS DE TOMAR DANO");
+
         if (animator != null)
         {
             animator.ResetTrigger("Hurt");
@@ -297,7 +366,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
     IEnumerator InvincibilityRoutine()
     {
         isInvincible = true;
@@ -307,6 +375,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ApplyKnockback(Vector2 force, float duration)
     {
+        DebugState("APPLY KNOCKBACK");
         StopCoroutine(nameof(KnockbackRoutine));
         StartCoroutine(KnockbackRoutine(force, duration));
     }
@@ -314,17 +383,20 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator KnockbackRoutine(Vector2 force, float duration)
     {
         isKnockedBack = true;
+        DebugState("KNOCKBACK INICIO");
 
-        // knockback previsível, sem depender de massa/drag
         rb.linearVelocity = force;
 
         yield return new WaitForSeconds(duration);
 
         isKnockedBack = false;
+        DebugState("KNOCKBACK FIM");
     }
 
     void Die()
     {
+        DebugState("DIE");
+        GameProgress.ResetProgress(maxLives, totalPasteisSupremos);
         SceneManager.LoadScene(defeatSceneName);
     }
 
@@ -336,6 +408,8 @@ public class PlayerMovement : MonoBehaviour
         jumpForce = originalJumpForce * jumpMultiplier;
         oilMovementResponsiveness = movementResponsiveness;
         oilDamagePerSecond = damagePerSecond;
+
+        DebugState("ENTROU NO OLEO");
     }
 
     public void ResetOilEffect()
@@ -347,6 +421,8 @@ public class PlayerMovement : MonoBehaviour
         oilMovementResponsiveness = 0.1f;
         oilDamagePerSecond = 0f;
         oilTimer = 0f;
+
+        DebugState("SAIU DO OLEO");
     }
 
     void HandleOilDamage()
@@ -358,6 +434,7 @@ public class PlayerMovement : MonoBehaviour
         if (oilTimer >= 1f)
         {
             oilTimer = 0f;
+            DebugState("DANO DO OLEO");
             TakeDamageFromEnemy(Mathf.RoundToInt(oilDamagePerSecond));
         }
     }
@@ -373,6 +450,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void CollectPastelSupremo(float speedMultiplier, float cooldownMultiplier, float duration)
     {
+        DebugState("COLETOU PASTEL SUPREMO");
+
         lives = maxLives;
         SaveLives();
 
@@ -394,6 +473,8 @@ public class PlayerMovement : MonoBehaviour
             StopCoroutine(supremeRoutine);
 
         supremeRoutine = StartCoroutine(SupremeBuffRoutine(duration));
+
+        DebugState("ATIVOU BUFF SUPREMO");
     }
 
     IEnumerator SupremeBuffRoutine(float duration)
@@ -409,6 +490,8 @@ public class PlayerMovement : MonoBehaviour
         projectileSpeedMultiplier = originalProjectileSpeedMultiplier;
         shootCooldown = originalShootCooldown;
         supremeTimeRemaining = 0f;
+
+        DebugState("BUFF SUPREMO TERMINOU");
     }
 
     void UpdateBuffUI()
@@ -421,7 +504,24 @@ public class PlayerMovement : MonoBehaviour
 
     void WinGame()
     {
+        DebugState("WIN GAME");
         SceneManager.LoadScene(victorySceneName);
+    }
+
+    void DebugState(string origem)
+    {
+        if (!debugPlayerState) return;
+
+        Debug.Log(
+            "[PLAYER DEBUG] " + origem +
+            " | isKnockedBack=" + isKnockedBack +
+            " | isShooting=" + isShooting +
+            " | isInvincible=" + isInvincible +
+            " | isGrounded=" + isGrounded +
+            " | horizontalInput=" + horizontalInput +
+            " | velocity=" + rb.linearVelocity +
+            " | lives=" + lives
+        );
     }
 
     void OnDrawGizmosSelected()

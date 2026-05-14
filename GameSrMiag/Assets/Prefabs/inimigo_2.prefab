@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
   uniqueId: 
-  maxHealth: 3
+  maxHealth: 1
   canPatrol: 1
   speed: 2
   wallLayer:
@@ -167,7 +167,7 @@ MonoBehaviour:
     m_Bits: 640
   startingDirection: 1
   attackPoint: {fileID: 9084293253876636064}
-  detectionRadius: 1.5
+  detectionRadius: 2
   playerLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -177,6 +177,9 @@ MonoBehaviour:
   projectileFollowsPlayer: 0
   projectileFollowStrength: 5
   deathDestroyDelay: 0.4
+  renderersToBlink: []
+  blinkDuration: 0.15
+  blinkCount: 2
 --- !u!70 &3999603639145790977
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

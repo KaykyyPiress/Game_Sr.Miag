@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; 
 
 public class EnemyShooter : MonoBehaviour
 {
@@ -34,6 +35,10 @@ public class EnemyShooter : MonoBehaviour
     public float deathDestroyDelay = 0.4f;
 
     private Rigidbody2D rb;
+    [Header("Piscar ao tomar dano")]
+    public SpriteRenderer[] renderersToBlink;
+    public float blinkDuration = 0.15f;
+    public int blinkCount = 2;
     private Animator animator;
     private Collider2D col;
 
@@ -52,6 +57,15 @@ public class EnemyShooter : MonoBehaviour
         {
             Destroy(gameObject);
             return;
+        }
+
+        if (renderersToBlink == null || renderersToBlink.Length == 0)
+        {
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                renderersToBlink = new SpriteRenderer[] { sr };
+            }
         }
 
         rb = GetComponent<Rigidbody2D>();
@@ -137,6 +151,11 @@ public class EnemyShooter : MonoBehaviour
 
     public void ShootProjectile()
     {
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayEnemyShoot();
+        }
         if (isDead) return;
         if (projectilePrefab == null || firePoint == null) return;
 
@@ -186,18 +205,47 @@ public class EnemyShooter : MonoBehaviour
 
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlayEnemyHurt();
+            AudioManager.Instance.PlayEnemyDamage();
         }
-        
+
         if (animator != null)
         {
             animator.ResetTrigger("Hurt");
             animator.SetTrigger("Hurt");
         }
 
+        StopCoroutine(nameof(BlinkRoutine));
+        StartCoroutine(nameof(BlinkRoutine));
+
         if (currentHealth <= 0)
         {
             Die();
+        }
+    }
+
+    IEnumerator BlinkRoutine()
+    {
+        if (renderersToBlink == null || renderersToBlink.Length == 0)
+            yield break;
+
+        for (int i = 0; i < blinkCount; i++)
+        {
+            SetRenderersVisible(false);
+            yield return new WaitForSeconds(blinkDuration / 2f);
+
+            SetRenderersVisible(true);
+            yield return new WaitForSeconds(blinkDuration / 2f);
+        }
+    }
+
+    void SetRenderersVisible(bool visible)
+    {
+        for (int i = 0; i < renderersToBlink.Length; i++)
+        {
+            if (renderersToBlink[i] != null)
+            {
+                renderersToBlink[i].enabled = visible;
+            }
         }
     }
 

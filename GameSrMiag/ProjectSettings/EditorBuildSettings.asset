@@ -9,20 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu/Menu.unity
     guid: d2617cdcd84297b4bb5f8f91aee9c13f
   - enabled: 1
-    path: Assets/Scenes/Menu/Historia.unity
-    guid: fcc37b5774f61be41bf0d8c3f38b7eae
-  - enabled: 1
-    path: Assets/Scenes/Menu/ComoJogar.unity
-    guid: 122dd441e6baa2d4c9d4458f3b726ad6
-  - enabled: 1
-    path: Assets/Scenes/Menu/Corredor.unity
-    guid: 644742bbecb0fd44dae5236dc4c4e1e9
-  - enabled: 1
     path: Assets/Scenes/K/Recep.unity
     guid: cc84582fe507b7042afd09497b158bf8
   - enabled: 1
     path: Assets/Scenes/K/K1.unity
-    guid: 502ae740cbc57fb4088364d5425471dd
+    guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Scenes/K/K2.unity
     guid: cc9395b2672ef6e4986a3c3ae0b999be
@@ -30,14 +21,23 @@ EditorBuildSettings:
     path: Assets/Scenes/K/K4.unity
     guid: dd69f5e0d1f718f4d819e0b52742fd64
   - enabled: 1
+    path: Assets/Scenes/K/K3.unity
+    guid: 3659004c017afdc448b34fc4dcceecb4
+  - enabled: 1
     path: Assets/Scenes/K/K5.unity
     guid: afb91d50720e04e468579fda10d3540b
   - enabled: 1
+    path: Assets/Scenes/Menu/ComoJogar.unity
+    guid: 122dd441e6baa2d4c9d4458f3b726ad6
+  - enabled: 1
+    path: Assets/Scenes/Menu/Historia.unity
+    guid: fcc37b5774f61be41bf0d8c3f38b7eae
+  - enabled: 1
+    path: Assets/Scenes/Telas/Vitoria.unity
+    guid: d51c0afb9d0a43445a9ede473eef36cd
+  - enabled: 1
     path: Assets/Scenes/Telas/Derrota.unity
     guid: 1bafd6d4fe348cc409a082981f0b277b
-  - enabled: 1
-    path: Assets/Scenes/Telas/Ganhou.unity
-    guid: d51c0afb9d0a43445a9ede473eef36cd
   - enabled: 1
     path: Assets/Scenes/Menu/Creditos.unity
     guid: 995cf63b12ea1be4996327653dbefe78

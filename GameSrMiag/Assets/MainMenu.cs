@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
         {
             Destroy(menuRoot);
         }
-
+        GameProgress.ResetProgress(4, 6);
         SceneManager.LoadScene(firstSceneName);
     }
 

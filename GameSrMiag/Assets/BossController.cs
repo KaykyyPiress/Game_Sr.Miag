@@ -226,7 +226,13 @@ public class BossController : MonoBehaviour
 
     void StartAttack()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySwordAttack();
+        }
+        
         if (isDead) return;
+
 
         isAttacking = true;
         rb.linearVelocity = Vector2.zero;
@@ -237,10 +243,13 @@ public class BossController : MonoBehaviour
             animator.ResetTrigger("Attack");
             animator.SetTrigger("Attack");
         }
+    }
 
+    public void PlayBossFootstep()
+    {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.PlayBossAttack();
+            AudioManager.Instance.PlayBossFootstep();
         }
     }
 
@@ -280,15 +289,14 @@ public class BossController : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         if (isDead) return;
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBossDamage();
+        }
 
         currentHealth -= damageAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayBossHurt();
-        }
-    
         ForceChasePlayer();
 
         StopCoroutine(nameof(BlinkRoutine));
@@ -333,11 +341,6 @@ public class BossController : MonoBehaviour
     void SpawnEnemies(int amount)
     {
         if (spawnPoints == null || spawnPoints.Length == 0) return;
-
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayBossSpawnEnemy();
-        }
 
         for (int i = 0; i < amount; i++)
         {
@@ -426,11 +429,6 @@ public class BossController : MonoBehaviour
         {
             animator.ResetTrigger("Attack");
             animator.SetTrigger("Die");
-        }
-
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayBossDeath();
         }
 
         GameProgress.MarkBossDead(uniqueId);

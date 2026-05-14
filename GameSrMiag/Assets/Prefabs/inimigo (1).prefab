@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPatrol
   uniqueId: 
-  maxHealth: 3
+  maxHealth: 1
   speed: 2
   wallLayer:
     serializedVersion: 2
@@ -145,6 +145,9 @@ MonoBehaviour:
   attackCooldown: 2
   damage: 1
   deathDestroyDelay: 0.4
+  renderersToBlink: []
+  blinkDuration: 0.15
+  blinkCount: 2
 --- !u!50 &7743854756214588143
 Rigidbody2D:
   serializedVersion: 5
